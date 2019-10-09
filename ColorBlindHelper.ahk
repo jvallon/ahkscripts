@@ -56,6 +56,8 @@ GetHexColorName(h,s,v)
     ; Construct the color string
     ; Prefixes: Dark, Light, Bright (or no prefix)
     ; Bases: White, Black, Grey, ROYGCBVM
+    
+    ;special case 1
     if(v = 0)
     {
         return "Black"
@@ -65,6 +67,8 @@ GetHexColorName(h,s,v)
     {
         if(v > .95) {
             return "White"
+        } else if( v > .75){
+            return "Silver"
         } else if(v > .5){
             return "Grey"
         } else if(v > .15){
@@ -75,7 +79,7 @@ GetHexColorName(h,s,v)
     }
 
     prefix := ""
-    if(s > .05 and s < .75)
+    if(v > 0 and v < .75)
     {
         prefix := "Light"
     } 
@@ -84,29 +88,9 @@ GetHexColorName(h,s,v)
         prefix := "Bright"
     }
 
-    if(v < .15)
-    {
-        return "Black"
-    } 
-    else if(Round(h,2) = 0)
-    {
-        if(s < .05){
-            if(v > .95) {
-                return "White"
-            } else if(v > .5){
-                return "Grey"
-            } else if(v > .15){
-                return "Dark Grey"
-            } else {
-                return "Black"
-            }
-        } 
-        else
-        {
-            return prefix " Red"
-        }
-    }
-    else ;if(s > .75 and v > .5)
+    
+    
+    if(True) 
     {
         if(h < 0)
         {
@@ -115,7 +99,7 @@ GetHexColorName(h,s,v)
 
         if(h < 15)
         {
-            return "Red"
+            return prefix " " "Red"
         } else if(h < 45){
             return "Orange"
         } else if(h < 75){
@@ -163,3 +147,21 @@ else
     Tooltip, %colorName%, %MouseX%, %MouseY% 
     ;TrayTip, , %colorName%, 1, 17
 }
+return
+
+^F1::
+FileRead, rgbFileContents, rgb.txt
+if not ErrorLevel
+{
+    MouseGetPos, MouseX, MouseY
+    PixelGetColor, color, %MouseX%, %MouseY%, RGB
+    
+    regex := "O)(.*).#" SubStr(color,3,6)
+    FoundPos := RegExMatch(rgbFileContents, regex, OutputVar,1)
+    MsgBox, % OutputVar.Value(1)`
+}
+else
+{
+    MsgBox, %A_LastError%
+} 
+return
