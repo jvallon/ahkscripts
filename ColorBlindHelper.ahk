@@ -75,7 +75,14 @@ GetHexColorName(h,s,v)
     }
 
     prefix := ""
-    ;if(
+    if(s > .05 and s < .75)
+    {
+        prefix := "Light"
+    } 
+    else if(s >= .85)
+    {
+        prefix := "Bright"
+    }
 
     if(v < .15)
     {
@@ -83,18 +90,29 @@ GetHexColorName(h,s,v)
     } 
     else if(Round(h,2) = 0)
     {
-        if(v > .95) {
-            return "White"
-        } else if(v > .5){
-            return "Grey"
-        } else if(v > .15){
-            return "Dark Grey"
-        } else {
-            return "Black"
+        if(s < .05){
+            if(v > .95) {
+                return "White"
+            } else if(v > .5){
+                return "Grey"
+            } else if(v > .15){
+                return "Dark Grey"
+            } else {
+                return "Black"
+            }
+        } 
+        else
+        {
+            return prefix " Red"
         }
     }
-    else if(s > .75 and v > .5)
+    else ;if(s > .75 and v > .5)
     {
+        if(h < 0)
+        {
+            h := 360 + h
+        }
+
         if(h < 15)
         {
             return "Red"
@@ -102,18 +120,24 @@ GetHexColorName(h,s,v)
             return "Orange"
         } else if(h < 75){
             return "Yellow"
-        } else if(h<140){
+        } else if(h < 105){
+            return "Yellow-Green"
+        } else if(h < 135){
             return "Green"
-        } else if(h < 180){
+        } else if(h < 165){
+            return "Cyan-Green"
+        } else if(h < 195){
             return "Cyan"
         } else if(h < 225){
             return "Blue"
         } else if(h < 255){
-            return "Dark Blue"
-        } else if(h < 280){
+            return "Royal Blue"
+        } else if(h < 285){
             return "Violet"
-        } else if(h < 345){
+        } else if(h < 315){
             return "Magenta"
+        } else if(h < 345){
+            return "Dark Magenta"
         } else {
             return "Red"
         }
@@ -133,8 +157,9 @@ else
     MouseGetPos, MouseX, MouseY
     PixelGetColor, color, %MouseX%, %MouseY%, RGB
     ;ToolTip, Color is %color%, %MouseX%, %MouseY%
-;    TrayTip, Title, %color%, 1, 17
     rgb := HexToRGB(color)
     hsv := RGBtoHSV(rgb.r,rgb.g,rgb.b)
-    Tooltip, % GetHexColorName(hsv.h,hsv.s,hsv.v)": " . hsv.h "," hsv.s "," hsv.v, %MouseX%, %MouseY%
+    colorName := GetHexColorName(hsv.h,hsv.s,hsv.v) ": " . hsv.h "," hsv.s "," hsv.v
+    Tooltip, %colorName%, %MouseX%, %MouseY% 
+    ;TrayTip, , %colorName%, 1, 17
 }
